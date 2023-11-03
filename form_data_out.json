@@ -1,0 +1,35 @@
+{
+  "forms": [
+    {
+      "name": "test_form",
+      "title": "Example Form",
+      "members": [
+        {
+          "name": "name_text",
+          "type": "text",
+          "value": "here is default text"
+        },
+        {
+          "name": "name_password",
+          "type": "text",
+          "value": "secret password"
+        },
+        {
+          "name": "name_state",
+          "type": "state",
+          "value": true
+        },
+        {
+          "name": "name_binswitch",
+          "type": "binswitch",
+          "set": true
+        },
+        {
+          "name": "name_option",
+          "type": "select",
+          "set": 0
+        }
+      ]
+    }
+  ]
+}
