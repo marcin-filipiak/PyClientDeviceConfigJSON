@@ -1,6 +1,14 @@
 import sys
 import json
+
+#pip install pybluez==0.22
+import bluetooth
+
 from PyQt5.QtWidgets import QApplication, QMainWindow, QVBoxLayout, QWidget, QLabel, QLineEdit, QCheckBox, QRadioButton, QPushButton, QComboBox, QLabel
+
+
+target_device_address = '30:AE:A4:25:09:E2'
+
 
 def create_label(member):
     label = QLabel(member["value"])
@@ -49,15 +57,10 @@ def create_button(button, form):
 
 def save(form):
     data = {"forms": [{"name": "test_form","title": "Example Form","members": []}]}
-
-    # Lista typów elementów, które chcemy znaleźć
     types_to_search = [QLineEdit, QCheckBox, QRadioButton, QComboBox]
-
     for widget_type in types_to_search:
         for member in form.findChildren(widget_type):
             name = member.objectName()
-            print(name)
- 
             if name:
                 member_data = {
                     "name": name,
@@ -75,10 +78,9 @@ def save(form):
                     member_data["type"] = "select"
                     member_data["set"] = member.currentIndex()
                 data["forms"][0]["members"].append(member_data)
-
     with open('form_data_out.json', 'w') as file:
         json.dump(data, file, indent=2)
-
+    sendbt(json.dumps(data))
     pass
 
 def reset(form):
@@ -112,15 +114,53 @@ def create_form(form_data):
     form.setLayout(layout)
     return form
 
+def get_available_devices():
+  devices = bluetooth.discover_devices(duration=4, lookup_names=True, device_id=-1)
+  print(devices)
+  return devices
+
+def sendbt(message):
+    try:
+        sock = bluetooth.BluetoothSocket(bluetooth.RFCOMM)
+        sock.connect((target_device_address, 1))  # port RFCOMM (default is 1)
+        sock.send(message)
+        sock.close()
+    except Exception as e:
+        print(f'Something gone wrong: {e}')
+    pass
+
+
+def receivebt():
+    received_data = ""
+    try:
+        sock = bluetooth.BluetoothSocket(bluetooth.RFCOMM)
+        sock.connect((target_device_address, 1))  # Port RFCOMM (default is 1)
+        print(f"Connected to device: {target_device_address}")
+        while True:
+            data = sock.recv(1024)
+            if not data:
+                break
+            received_data += data.decode('utf-8')
+            if '\r\n' in received_data:
+                break
+        sock.close()
+        print("Connection closed")
+        print(received_data)
+        return received_data
+    except Exception as e:
+        print(f'Something gone wrong: {e}')
+        return None
+
 def main():
     app = QApplication(sys.argv)
-    with open('form.json', 'r') as file:
-        data = json.load(file)
-        form_data = data["forms"][0]
-        window = QMainWindow()
-        window.setCentralWidget(create_form(form_data))
-        window.show()
-        sys.exit(app.exec_())
+    data = json.loads(receivebt())
+    form_data = data["forms"][0]
+    window = QMainWindow()
+    window.setWindowTitle("PyClientDeviceConfigJSON")    
+    window.setCentralWidget(create_form(form_data))
+    window.show()
+    sys.exit(app.exec_())
+
 
 if __name__ == '__main__':
     main()

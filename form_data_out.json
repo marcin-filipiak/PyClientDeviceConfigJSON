@@ -7,7 +7,7 @@
         {
           "name": "name_text",
           "type": "text",
-          "value": "here is default text"
+          "value": "answer"
         },
         {
           "name": "name_password",
