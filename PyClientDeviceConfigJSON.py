@@ -78,8 +78,6 @@ def save(form):
                     member_data["type"] = "select"
                     member_data["set"] = member.currentIndex()
                 data["forms"][0]["members"].append(member_data)
-    with open('form_data_out.json', 'w') as file:
-        json.dump(data, file, indent=2)
     sendbt(json.dumps(data))
     pass
 
