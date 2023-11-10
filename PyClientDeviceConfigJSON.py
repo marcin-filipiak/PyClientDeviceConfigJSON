@@ -39,7 +39,7 @@ def create_binswitch(member):
 
 def create_select(member):
     select = QComboBox()
-    for value in member["values"]:
+    for value in member["value"]:
         select.addItem(value["label"], value["value"])
     select.setCurrentIndex(member["set"])
     select.setObjectName(member["name"])
