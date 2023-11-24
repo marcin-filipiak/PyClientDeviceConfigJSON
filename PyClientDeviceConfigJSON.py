@@ -122,6 +122,8 @@ def sendbt(message):
         sock = bluetooth.BluetoothSocket(bluetooth.RFCOMM)
         sock.connect((target_device_address, 1))  # port RFCOMM (default is 1)
         sock.send(message)
+        print("Sending data:")
+        print(message)
         sock.close()
     except Exception as e:
         print(f'Something gone wrong: {e}')
@@ -142,7 +144,7 @@ def receivebt():
             if '\r\n' in received_data:
                 break
         sock.close()
-        print("Connection closed")
+        print("Received data:")
         print(received_data)
         return received_data
     except Exception as e:
