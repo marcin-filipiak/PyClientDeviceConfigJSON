@@ -28,6 +28,7 @@ def create_password(member):
 def create_state(member):
     state = QCheckBox(member["label"])
     state.setChecked(member["value"])
+    state.setDisabled(True)
     state.setObjectName(member["name"])
     return state
 
